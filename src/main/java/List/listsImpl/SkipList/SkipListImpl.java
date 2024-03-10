@@ -131,10 +131,20 @@ public class SkipListImpl<K extends Comparable<K>, V> {
     public void print() {
         SkipNode<K, V> node = head.getForward()[0];
         while (node != null) {
-            System.out.print(node.getKey() + " ");
+            System.out.print(node.getValue() + " ");
             node = node.getForward()[0];
         }
         System.out.println();
     }
 
+    // listOf
+
+    @SafeVarargs
+    public static <K extends Comparable<K>, V> SkipListImpl<K, V> listOf(KVPair<K, V>... pairs) {
+        SkipListImpl<K, V> list = new SkipListImpl<>();
+        for (KVPair<K, V> pair : pairs) {
+            list.insert(pair.getKey(), pair.getValue());
+        }
+        return list;
+    }
 }

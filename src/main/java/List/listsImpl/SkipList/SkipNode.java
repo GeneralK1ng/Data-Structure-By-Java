@@ -1,6 +1,5 @@
 package List.listsImpl.SkipList;
 
-import java.util.Arrays;
 
 public class SkipNode<K extends Comparable<K>, V> {
     private K key;
