@@ -45,10 +45,20 @@ public class DoublyListImpl<T> implements FuckLinkedList<T> {
         DoublyNode<T> node = head;
         while (node != null) {
             if (node.getData().equals(data)) {
-                if (node.getNext() == null) {
+                if (node.getNext() == null && node.getPrev() == null) {
+                    // Single node in the list
                     head = null;
                     tail = null;
+                } else if (node.getNext() == null) {
+                    // Last node in the list
+                    node.getPrev().setNext(null);
+                    tail = node.getPrev();
+                } else if (node.getPrev() == null) {
+                    // First node in the list
+                    node.getNext().setPrev(null);
+                    head = node.getNext();
                 } else {
+                    // Middle node in the list
                     node.getNext().setPrev(node.getPrev());
                     node.getPrev().setNext(node.getNext());
                 }
@@ -58,8 +68,6 @@ public class DoublyListImpl<T> implements FuckLinkedList<T> {
             node = node.getNext();
         }
     }
-
-
 
 
     // Deletes the node at the specified position
