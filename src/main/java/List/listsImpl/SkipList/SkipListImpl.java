@@ -72,10 +72,19 @@ public class SkipListImpl<K extends Comparable<K>, V> {
         //创建新结点
         SkipNode<K, V> newNode = new SkipNode<>(key, value, nodeLevel);
         //调整forward指针
+
         for (int i = 0; i <= nodeLevel - 1; i++) {
-            newNode.getForward()[i] = update[i].getForward()[i];
-            update[i].getForward()[i] = newNode;
+            if (update[i] != null) {
+                newNode.getForward()[i] = update[i].getForward()[i];
+                update[i].getForward()[i] = newNode;
+            } else {
+                // 处理 update[i] 为 null 的情况，可能需要调整逻辑
+                update[i] = head;
+                newNode.getForward()[i] = update[i].getForward()[i];
+                update[i].getForward()[i] = newNode;
+            }
         }
+
         nodeCount++;
         return true;
     }
@@ -89,7 +98,7 @@ public class SkipListImpl<K extends Comparable<K>, V> {
         return level;
     }
 
-    public boolean remove(K key, V[] value) {
+    public boolean remove(K key) {
         SkipNode<K, V>[] update = new SkipNode[MAX_LEVEL];
         SkipNode<K, V> node = head;
         for (int i = level - 1; i >= 0; i--) {
@@ -103,7 +112,6 @@ public class SkipListImpl<K extends Comparable<K>, V> {
         if (node == null || !node.getKey().equals(key)) {
             return false;
         }
-        value[0] = node.getValue();
         for (int i = 0; i < level; i++) {
             if (update[i].getForward()[i] != node) {
                 break;
@@ -121,7 +129,7 @@ public class SkipListImpl<K extends Comparable<K>, V> {
     }
 
     public void print() {
-        SkipNode<K, V> node = head;
+        SkipNode<K, V> node = head.getForward()[0];
         while (node != null) {
             System.out.print(node.getKey() + " ");
             node = node.getForward()[0];
