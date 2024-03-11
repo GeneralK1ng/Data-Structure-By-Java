@@ -1,18 +1,20 @@
 package Queue.QueueImpl.NormalQueue;
 
 
+import Queue.Queues.NormalQueue;
 
-public class NormalQueue<T> {
+public class NormalQueueImpl<T> implements NormalQueue<T> {
     private NormalQueueNode<T> front;
     private NormalQueueNode<T> rear;
 
 
-    public NormalQueue() {
+    public NormalQueueImpl() {
         front = null;
         rear = null;
     }
 
     // 入队
+    @Override
     public boolean add(T data) {
         NormalQueueNode<T> node = new NormalQueueNode<>(data);
         if (isEmpty()) {
@@ -26,6 +28,7 @@ public class NormalQueue<T> {
     }
 
     // 出队
+    @Override
     public T remove() {
         if (isEmpty()) {
             throw new RuntimeException("队列为空");
@@ -41,6 +44,7 @@ public class NormalQueue<T> {
     }
 
     // 获取队首元素（不出队）
+    @Override
     public T peek() {
         if (isEmpty()) {
             throw new RuntimeException("队列为空");
