@@ -1,13 +1,16 @@
 package List.listsImpl.SkipList;
 
 import java.util.Random;
+import java.util.function.Consumer;
+
+import List.lists.FuckSkipList;
 
 
-public class SkipListImpl<K extends Comparable<K>, V> {
-    private static final int MAX_LEVEL = 16;
-    private SkipNode<K, V> head;
-    private int level;
-    private Random random; // Random number generator
+public class SkipListImpl<K extends Comparable<K>, V> implements FuckSkipList<K, V> {
+    private static final int MAX_LEVEL = 32;
+    private final SkipNode<K, V> head;
+    private Integer level;
+    private final Random random; // Random number generator
 
     private int nodeCount;
 
@@ -34,7 +37,14 @@ public class SkipListImpl<K extends Comparable<K>, V> {
         this.nodeCount = nodeCount;
     }
 
-    public SkipNode<K, V> search(K key) {
+
+    /**
+     * 查找
+     *
+     * @param key 键
+     * @return 查找结果
+     */
+    private SkipNode<K, V> search(K key) {
         SkipNode<K, V> node = head;
         for (int i = level - 1; i >= 0; i--) {
             while (node.getForward()[i] != null && node.getForward()[i].getKey().compareTo(key) < 0) {
@@ -49,7 +59,15 @@ public class SkipListImpl<K extends Comparable<K>, V> {
         }
     }
 
-    public boolean insert(K key, V value) {
+    /**
+     * 插入新结点
+     *
+     * @param key 键
+     * @param value 值
+     * @return true表示插入成功，false表示插入失败
+     */
+    @Override
+    public boolean add(K key, V value) {
         SkipNode<K, V>[] update = new SkipNode[MAX_LEVEL];
         SkipNode<K, V> node = head;
         for (int i = level - 1; i >= 0; i--) {
@@ -89,7 +107,7 @@ public class SkipListImpl<K extends Comparable<K>, V> {
         return true;
     }
 
-    // Method to generate random level for new node
+    // 随机生成层数
     private int getRandomLevel() {
         int level = 1;
         while (random.nextDouble() < 0.5 && level < MAX_LEVEL) {
@@ -98,6 +116,13 @@ public class SkipListImpl<K extends Comparable<K>, V> {
         return level;
     }
 
+    /**
+     * 删除结点
+     *
+     * @param key 键
+     * @return true表示删除成功，false表示删除失败
+     */
+    @Override
     public boolean remove(K key) {
         SkipNode<K, V>[] update = new SkipNode[MAX_LEVEL];
         SkipNode<K, V> node = head;
@@ -128,6 +153,10 @@ public class SkipListImpl<K extends Comparable<K>, V> {
         return true;
     }
 
+    /**
+     * 打印SkipList
+     */
+    @Override
     public void print() {
         SkipNode<K, V> node = head.getForward()[0];
         while (node != null) {
@@ -137,14 +166,88 @@ public class SkipListImpl<K extends Comparable<K>, V> {
         System.out.println();
     }
 
-    // listOf
-
-    @SafeVarargs
-    public static <K extends Comparable<K>, V> SkipListImpl<K, V> listOf(KVPair<K, V>... pairs) {
-        SkipListImpl<K, V> list = new SkipListImpl<>();
-        for (KVPair<K, V> pair : pairs) {
-            list.insert(pair.getKey(), pair.getValue());
+    /**
+     * 替换某个元素的值
+     *
+     * @param key 键
+     * @param value 值
+     * @return 是否成功
+     */
+    @Override
+    public boolean replace(K key, V value){
+        SkipNode<K, V> node = search(key);
+        if(node == null){
+            return false;
         }
-        return list;
+        node.setValue(value);
+        return true;
     }
+
+    /**
+     * 判断是否包含某个元素
+     *
+     * @param key 键
+     * @return 是否包含
+     */
+    @Override
+    public boolean contains(K key){
+        return search(key) != null;
+    }
+
+    /**
+     * 遍历
+     *
+     * @param action 每个元素的处理逻辑
+     */
+    @Override
+    public void forEach(Consumer<? super KVPair<K, V>> action){
+        SkipNode<K, V> node = head.getForward()[0];
+        while(node != null){
+            action.accept(new KVPair<>(node.getKey(), node.getValue()));
+            node = node.getForward()[0];
+        }
+    }
+
+    /**
+     * 获取指定key的值
+     *
+     * @param key 键
+     * @return 值
+     */
+    @Override
+    public KVPair<K, V> get(K key){
+        SkipNode<K, V> node = search(key);
+        if(node == null){
+            return null;
+        }
+        return new KVPair<>(node.getKey(), node.getValue());
+    }
+
+    /**
+     * 判断是否为空
+     *
+     * @return 是否为空
+     */
+    @Override
+    public boolean isEmpty(){
+        return nodeCount == 0;
+    }
+
+    /**
+     * 判断是否包含所有元素
+     *
+     * @param pairs 键值对
+     * @return 是否包含所有元素
+     */
+    @SafeVarargs
+    @Override
+    public final boolean containsAll(KVPair<K, V>... pairs){
+        for(KVPair<K, V> pair : pairs){
+            if(!contains(pair.getKey())){
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
