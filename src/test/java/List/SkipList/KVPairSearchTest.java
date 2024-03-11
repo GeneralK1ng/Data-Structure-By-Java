@@ -1,6 +1,6 @@
-package SkipList;
+package List.SkipList;
 
-import List.listsImpl.SkipList.SkipListImpl;
+import List.ListsImpl.SkipList.SkipListImpl;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -1,6 +1,6 @@
-package SkipList;
+package List.SkipList;
 
-import List.listsImpl.SkipList.KVPair;
+import List.ListsImpl.SkipList.KVPair;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

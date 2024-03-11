@@ -1,4 +1,4 @@
-package List.lists;
+package List.Lists;
 
 public interface FuckLinkedList<T> {
 

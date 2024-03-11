@@ -1,4 +1,4 @@
-package List.listsImpl.CircularLinkedList;
+package List.ListsImpl.CircularLinkedList;
 
 public class CircularNode<T> {
     public T data;

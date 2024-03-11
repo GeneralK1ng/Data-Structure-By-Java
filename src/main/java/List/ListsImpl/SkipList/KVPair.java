@@ -1,4 +1,4 @@
-package List.listsImpl.SkipList;
+package List.ListsImpl.SkipList;
 
 import java.util.Iterator;
 

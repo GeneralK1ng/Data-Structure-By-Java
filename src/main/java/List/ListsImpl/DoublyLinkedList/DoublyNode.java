@@ -1,4 +1,4 @@
-package List.listsImpl.DoublyLinkedList;
+package List.ListsImpl.DoublyLinkedList;
 
 public class DoublyNode<T> {
     private T data;

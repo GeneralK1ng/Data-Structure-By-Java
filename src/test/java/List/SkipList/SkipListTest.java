@@ -1,8 +1,8 @@
-package SkipList;
+package List.SkipList;
 
-import List.lists.FuckSkipList;
-import List.listsImpl.SkipList.KVPair;
-import List.listsImpl.SkipList.SkipListImpl;
+import List.Lists.FuckSkipList;
+import List.ListsImpl.SkipList.KVPair;
+import List.ListsImpl.SkipList.SkipListImpl;
 
 public class SkipListTest {
     public static void main(String[] args) {

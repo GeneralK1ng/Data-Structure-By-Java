@@ -1,7 +1,7 @@
-package List.listsImpl.SinglyLinkedList;
+package List.ListsImpl.SinglyLinkedList;
 
 
-import List.lists.FuckLinkedList;
+import List.Lists.FuckLinkedList;
 
 public class SinglyListImpl<T> implements FuckLinkedList<T> {
 

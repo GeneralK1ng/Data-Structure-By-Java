@@ -1,9 +1,9 @@
-package List.listsImpl.SkipList;
+package List.ListsImpl.SkipList;
 
 import java.util.Random;
 import java.util.function.Consumer;
 
-import List.lists.FuckSkipList;
+import List.Lists.FuckSkipList;
 
 
 public class SkipListImpl<K extends Comparable<K>, V> implements FuckSkipList<K, V> {

@@ -1,4 +1,4 @@
-package List.listsImpl.SkipList;
+package List.ListsImpl.SkipList;
 
 
 public class SkipNode<K extends Comparable<K>, V> {

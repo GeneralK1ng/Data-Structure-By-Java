@@ -1,7 +1,7 @@
-package List.lists;
+package List.Lists;
 
-import List.listsImpl.SkipList.KVPair;
-import List.listsImpl.SkipList.SkipListImpl;
+import List.ListsImpl.SkipList.KVPair;
+import List.ListsImpl.SkipList.SkipListImpl;
 
 import java.util.function.Consumer;
 

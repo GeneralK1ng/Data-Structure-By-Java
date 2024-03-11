@@ -1,11 +1,10 @@
-package List.listsImpl.SinglyLinkedList;
+package Queue.QueueImpl.NormalQueue;
 
-
-public class SinglyNode<T> {
+public class NormalQueueNode<T> {
     private T data;
-    private SinglyNode<T> next;
+    private NormalQueueNode<T> next;
 
-    public SinglyNode(T data) {
+    public NormalQueueNode(T data) {
         this.data = data;
         this.next = null;
     }
@@ -18,11 +17,12 @@ public class SinglyNode<T> {
         this.data = data;
     }
 
-    public SinglyNode<T> getNext() {
+    public NormalQueueNode<T> getNext() {
         return next;
     }
 
-    public void setNext(SinglyNode<T> next) {
+    public void setNext(NormalQueueNode<T> next) {
         this.next = next;
     }
+
 }

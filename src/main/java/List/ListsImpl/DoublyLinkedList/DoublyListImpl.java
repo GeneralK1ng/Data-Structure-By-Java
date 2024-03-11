@@ -1,6 +1,6 @@
-package List.listsImpl.DoublyLinkedList;
+package List.ListsImpl.DoublyLinkedList;
 
-import List.lists.FuckLinkedList;
+import List.Lists.FuckLinkedList;
 
 public class DoublyListImpl<T> implements FuckLinkedList<T> {
     private DoublyNode<T> head;

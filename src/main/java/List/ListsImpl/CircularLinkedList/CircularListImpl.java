@@ -1,6 +1,6 @@
-package List.listsImpl.CircularLinkedList;
+package List.ListsImpl.CircularLinkedList;
 
-import List.lists.FuckLinkedList;
+import List.Lists.FuckLinkedList;
 
 public class CircularListImpl<T> implements FuckLinkedList<T> {
     private CircularNode<T> head;
