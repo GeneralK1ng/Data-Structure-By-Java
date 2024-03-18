@@ -10,7 +10,7 @@ import java.util.Random;
 public class KVPairGenerator {
 
     public static void main(String[] args) {
-        generateAndWriteData("data.txt", 1000000); // 生成100万条数据
+        generateAndWriteData("data.txt", 10000000); // 生成100万条数据
     }
 
     private static void generateAndWriteData(String filename, int dataSize) {

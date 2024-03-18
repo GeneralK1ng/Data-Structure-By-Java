@@ -4,6 +4,9 @@ package Tree.RBTree;
 import List.Lists.FuckLinkedList;
 import List.ListsImpl.DoublyLinkedList.DoublyListImpl;
 
+import java.util.Stack;
+
+
 /*红黑树的性质
 * 1. 节点为红色或者黑色
 * 2. NIL 节点（null子节点）为黑色
@@ -12,8 +15,9 @@ import List.ListsImpl.DoublyLinkedList.DoublyListImpl;
 * */
 public class RedBlackTree<K extends Comparable<K>, V> {
     private Node<K,V> root;
-    private FuckLinkedList<Entry<K, V>> entryList = new DoublyListImpl<>();
+    private final FuckLinkedList<Entry<K, V>> entryList = new DoublyListImpl<>();
     private static Integer size = 0;
+
 
     public RedBlackTree() {
         root = null;
@@ -36,28 +40,10 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         }
     }
 
-    /**
-     * 从二叉搜索树中获取指定键值的节点
-     * @param current 当前遍历的节点
-     * @param key 要查找的键
-     * @return 找到的节点，如果未找到则返回null
-     */
-    private Node<K, V> getNode (Node<K,V> current, K key) {
-        // 当当前节点为空或者键值匹配时，返回当前节点
-        if (current == null) {
-            return null;
-        }
-        int cmp = key.compareTo(current.key);
-        // 如果键值相等，返回当前节点
-        if (cmp == 0) {
-            return current;
-        // 如果键值小于当前节点键值，递归在左子树中查找
-        } else if (cmp < 0) {
-            return getNode(current.left, key);
-        // 如果键值大于当前节点键值，递归在右子树中查找
-        } else {
-            return getNode(current.right, key);
-        }
+    public FuckLinkedList<Entry<K, V>> getList() {
+        inorderTraversal();
+        return entryList;
+
     }
 
     /**
@@ -162,6 +148,211 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         }
     }
 
+    public boolean remove(K key) {
+        if (root == null) {
+            return false;
+        }
+
+        return remove(root, key, null);
+    }
+
+
+    public V getAndRemove(K key) {
+        V[] result = (V[]) new Object[1];
+
+        if (root == null) {
+            throw new RuntimeException("Invalid key");
+        } else {
+            if (remove(root, key, result)) {
+                return result[0];
+            } else {
+                throw new RuntimeException("Invalid key");
+            }
+        }
+    }
+
+
+    private boolean remove(Node<K,V> node, K key, V[] result) {
+        assert node != null;
+        if (key != node.key) {
+            if (compare(key, node.key)) {
+                Node<K, V> left = node.left;
+                if (left != null && remove(left, key, result)) {
+                    maintainRelationship(node);
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                Node<K, V> right = node.right;
+                if (right != null && remove(right, key, result)) {
+                    maintainRelationship(node);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        assert key == node.key;
+        result[0] = node.value;
+
+        if (size == 1) {
+            clear();
+            return true;
+        }
+
+        if (node.left != null && node.right != null) {
+            Node<K, V> successor = node.right;
+            Node<K, V> parent = node;
+            while (successor.left != null) {
+                parent = successor;
+                successor = parent.left;
+            }
+
+            swapNode(node, successor);
+            maintainRelationship(parent);
+        }
+
+        if (node.isLeaf()) {
+            assert node.parent != null;
+
+            if (node.isBlack()) {
+                maintainAfterRemove(node);
+            }
+            if (node.direction() == Direction.LEFT) {
+                node.parent.left = null;
+            } else {
+                node.parent.right = null;
+            }
+
+        } else {
+            assert node.left == null || node.right == null;
+
+            Node<K, V> parent = node.parent;
+            Node<K, V> repacement = node.left != null ? node.left : node.right;
+
+            switch (node.direction()) {
+                case ROOT:
+                    root = repacement;
+                    break;
+                case LEFT:
+                    parent.left = repacement;
+                    break;
+                case RIGHT:
+                    parent.right = repacement;
+                    break;
+            }
+
+            if (node.isBlack()) {
+                if (repacement.isRed()) {
+                    repacement.color = Color.BLACK;
+                } else {
+                    maintainAfterRemove(repacement);
+                }
+            }
+        }
+        size--;
+        return true;
+    }
+
+    private void swapNode(Node<K, V> lhs, Node<K, V> rhs) {
+        K tempKey = lhs.key;
+        V tempValue = lhs.value;
+
+        lhs.key = rhs.key;
+        lhs.value = rhs.value;
+
+        rhs.key = tempKey;
+        rhs.value = tempValue;
+    }
+
+    private void maintainAfterRemove(Node<K, V> node) {
+        if (node.isRoot()) {
+            return;
+        }
+
+        assert node.isBlack() && node.hasSibling();
+
+        Direction direction = node.direction();
+
+        Node<K, V> sibling = node.sibling();
+
+        if (sibling.isRed()) {
+            Node<K, V> parent = node.parent;
+            assert parent != null && parent.isBlack();
+            assert sibling.left != null && sibling.left.isBlack();
+            assert sibling.right != null && sibling.right.isBlack();
+
+            rotateSameDirection(node.parent, direction);
+            sibling.color = Color.BLACK;
+            parent.color = Color.RED;
+
+            sibling = node.sibling();
+        }
+
+        Node<K, V> closeNephew = direction == Direction.LEFT ? sibling.left : sibling.right;
+        Node<K, V> distantNephew = direction == Direction.LEFT ? sibling.right : sibling.left;
+
+        boolean closeNephewIsBlack = closeNephew == null || closeNephew.isBlack();
+        boolean distantNephewIsBlack = distantNephew == null || distantNephew.isBlack();
+
+        assert sibling.isBlack();
+
+        if (closeNephewIsBlack && distantNephewIsBlack) {
+            if (node.parent.isRed()) {
+                sibling.color = Color.RED;
+                node.parent.color = Color.BLACK;
+                return;
+            } else {
+                sibling.color = Color.RED;
+                maintainAfterRemove(node.parent);
+                return;
+            }
+        } else {
+            if (closeNephew != null && closeNephew.isRed()) {
+                rotateOppositeDirection(sibling, direction);
+                closeNephew.color = Color.BLACK;
+                sibling.color = Color.RED;
+                sibling = node.sibling();
+
+                closeNephew = direction == Direction.LEFT ? sibling.left : sibling.right;
+                distantNephew = direction == Direction.LEFT ? sibling.right : sibling.left;
+            }
+
+            assert closeNephew == null || closeNephew.isBlack();
+            assert distantNephew.isRed();
+
+            rotateSameDirection(node.parent, direction);
+
+            sibling.color = node.parent.color;
+            node.parent.color = Color.BLACK;
+
+            if (distantNephew != null) {
+                distantNephew.color = Color.BLACK;
+            }
+        }
+    }
+
+    private void rotateSameDirection(Node<K, V> node, Direction direction) {
+        assert direction != Direction.ROOT;
+
+        if (direction == Direction.LEFT) {
+            rotateLeft(node);
+        } else {
+            rotateRight(node);
+        }
+    }
+
+    private void rotateOppositeDirection(Node<K, V> node, Direction direction) {
+        assert direction != Direction.ROOT;
+
+        if (direction == Direction.LEFT) {
+            rotateRight(node);
+        } else {
+            rotateLeft(node);
+        }
+    }
 
 
     private void insert(Node<K,V> node, K key, V value, boolean replace) {
@@ -225,7 +416,6 @@ public class RedBlackTree<K extends Comparable<K>, V> {
      *                   个数比 P - G - U 这条路径上少 1，暂时打破性质 4）。
      *                2. 重新染色，将 P 染黑，将 G 染红，同时满足了性质 3 和 4。
      * */
-
     private void maintainAfterInsert(Node<K, V> node) {
         assert node != null;
 
@@ -296,7 +486,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
      * @param node 需要进行左旋转的节点
      * WARNING：节点及其右子树不能为空。
      */
-    public void rotateLeft (Node<K,V> node) {
+    private void rotateLeft (Node<K,V> node) {
         assert(node != null && node.right != null); // 确保节点及其右子树不为空
 
         Node<K,V> parent = node.parent; // 保存当前节点的父节点
@@ -335,7 +525,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
      *
      * @param node 需要进行右旋转的节点，该节点不应为null且必须有左子节点。
      */
-    public void rotateRight (Node<K,V> node) {
+    private void rotateRight (Node<K,V> node) {
         assert(node != null && node.left != null);
 
         Node<K,V> parent = node.parent;
@@ -385,6 +575,51 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         }
     }
 
+    /**
+     * 从二叉搜索树中获取指定键值的节点
+     * @param current 当前遍历的节点
+     * @param key 要查找的键
+     * @return 找到的节点，如果未找到则返回null
+     */
+    private Node<K, V> getNode (Node<K,V> current, K key) {
+        // 当当前节点为空或者键值匹配时，返回当前节点
+        if (current == null) {
+            return null;
+        }
+        int cmp = key.compareTo(current.key);
+        // 如果键值相等，返回当前节点
+        if (cmp == 0) {
+            return current;
+            // 如果键值小于当前节点键值，递归在左子树中查找
+        } else if (cmp < 0) {
+            return getNode(current.left, key);
+            // 如果键值大于当前节点键值，递归在右子树中查找
+        } else {
+            return getNode(current.right, key);
+        }
+    }
 
+    private void inorderTraversal() {
+        if (root == null) {
+            return;
+        }
 
+        //TODO 需要实现一个栈数据结构
+        Stack<Node<K,V>> stack = new Stack<>();
+
+        Node<K,V> current = root;
+
+        while (current != null || !stack.empty()) {
+            while (current != null) {
+                stack.push(current);
+                current = current.left;
+            }
+            if (!stack.empty()) {
+                current = stack.peek();
+                stack.pop();
+                entryList.append(current.entry());
+                current = current.right;
+            }
+        }
+    }
 }

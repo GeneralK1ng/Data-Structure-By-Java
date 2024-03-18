@@ -164,7 +164,7 @@ public class DoublyListImpl<T> implements FuckLinkedList<T> {
     public void print() {
         DoublyNode<T> node = head;
         while (node != null) {
-            System.out.print(node.getData() + " ");
+            System.out.print(node.getData().toString() + " ");
             node = node.getNext();
         }
         System.out.println();
