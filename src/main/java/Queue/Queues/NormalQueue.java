@@ -19,4 +19,8 @@ public interface NormalQueue<T> {
      * @return 队首元素
      */
     T peek();
+
+    int size();
+
+    boolean isEmpty();
 }

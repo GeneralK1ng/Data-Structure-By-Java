@@ -8,7 +8,7 @@ public class PriorityQueueTest {
     public static void main(String[] args) {
         PriorityQueueImpl<Integer> queue = new PriorityQueueImpl<>();
         Random random = new Random();
-        queue.insert(10);
+       /* queue.insert(10);
         queue.insert(5);
         queue.insert(30);
         queue.insert(8);
@@ -20,10 +20,10 @@ public class PriorityQueueTest {
 
         System.out.println(queue.peekMin());
 
-        System.out.println(queue.size());
+        System.out.println(queue.size());*/
 
         // 测试插入大量数据
-        for (int i = 1; i <= 100; i++) {
+        for (int i = 1; i <= 31; i++) {
             // 插入随机数
             queue.insert(random.nextInt(100));
         }

@@ -1,6 +1,7 @@
 package List.ListsImpl.DoublyLinkedList;
 
 import List.Lists.FuckLinkedList;
+import Queue.Queues.NormalQueue;
 
 public class DoublyListImpl<T> implements FuckLinkedList<T> {
     private DoublyNode<T> head;

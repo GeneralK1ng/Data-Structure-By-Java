@@ -52,7 +52,8 @@ public class NormalQueueImpl<T> implements NormalQueue<T> {
         return front.getData();
     }
 
-    private boolean isEmpty() {
+    @Override
+    public boolean isEmpty() {
         return front == null;
     }
 
@@ -64,5 +65,17 @@ public class NormalQueueImpl<T> implements NormalQueue<T> {
         }
         System.out.println();
     }
+
+    // size
+    public int size() {
+        NormalQueueNode<T> node = front;
+        int size = 0;
+        while (node != null) {
+            size++;
+            node = node.getNext();
+        }
+        return size;
+    }
+
 
 }
