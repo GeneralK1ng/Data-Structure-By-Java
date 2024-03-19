@@ -62,4 +62,9 @@ public class ListNodeStackImpl<T> implements Stack<T> {
         }
         System.out.println("]->Bottom -size = "+count);
     }
+
+    @Override
+    public boolean empty() {
+        return count == 0;
+    }
 }

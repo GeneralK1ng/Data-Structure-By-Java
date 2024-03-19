@@ -10,6 +10,8 @@ public interface RBTree<K extends Comparable<K>, V> {
 
     V get(K key);
 
+    Integer getLevel(K key);
+
     FuckLinkedList<Entry<K, V>> getList();
 
     V getOrDefault(K key);

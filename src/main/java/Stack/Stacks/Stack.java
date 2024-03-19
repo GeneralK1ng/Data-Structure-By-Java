@@ -26,4 +26,10 @@ public interface Stack<T> {
      * 打印栈
      */
     public void print();
+
+    /**
+     * 判断栈是否为空
+     * @return  栈是否为空
+     */
+    public boolean empty();
 }

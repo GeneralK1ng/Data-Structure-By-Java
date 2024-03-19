@@ -3,10 +3,8 @@ package Tree.TreesImpl.RBTreesImpl;
 
 import List.Lists.FuckLinkedList;
 import List.ListsImpl.DoublyLinkedList.DoublyListImpl;
+import Stack.StacksImpl.ListNodeStackImpl;
 import Tree.Trees.RBTree;
-
-
-import java.util.Stack;
 
 
 /**
@@ -74,6 +72,24 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
             } else {
                 throw new RuntimeException("Key not found"); // 未找到键则抛出异常
             }
+        }
+    }
+
+    @Override
+    public Integer getLevel(K key) {
+        // 递归获取节点的深度
+        return getLevel(root, key);
+    }
+    private Integer getLevel(Node<K, V> node, K key) {
+        if (node == null) {
+            return 0;
+        }
+        if (node.key.equals(key)) {
+            return 1;
+        } else {
+            Integer leftLevel = getLevel(node.getLeft(), key);
+            Integer rightLevel = getLevel(node.getRight(), key);
+            return Math.max(leftLevel, rightLevel) + 1;
         }
     }
 
@@ -795,7 +811,8 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
         entryList = new DoublyListImpl<>();
 
         // 使用栈来辅助进行中序遍历
-        Stack<Node<K,V>> stack = new Stack<>();
+        // 鼠鼠的栈
+        Stack.Stacks.Stack<Node<K, V>> stack = new ListNodeStackImpl<>();
 
         Node<K,V> current = root;
 
@@ -815,6 +832,7 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
                 // 遍历右子树
                 current = current.right;
             }
+
         }
     }
 
