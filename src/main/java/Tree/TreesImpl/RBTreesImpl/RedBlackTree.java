@@ -3,6 +3,7 @@ package Tree.TreesImpl.RBTreesImpl;
 
 import List.Lists.FuckLinkedList;
 import List.ListsImpl.DoublyLinkedList.DoublyListImpl;
+import Tree.Trees.RBTree;
 
 
 import java.util.Stack;
@@ -14,7 +15,7 @@ import java.util.Stack;
 * 3. 红子节点的子节点为黑色
 * 4. 从根节点到任意 NIL 节点的每条路径上的黑色节点数量相同
 * */
-public class RedBlackTree<K extends Comparable<K>, V> {
+public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
     private Node<K,V> root;
     private FuckLinkedList<Entry<K, V>> entryList = new DoublyListImpl<>();
     private static Integer size = 0;
@@ -22,10 +23,13 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     public RedBlackTree() {
         root = null;
     }
+    @Override
     public boolean isEmpty() {return size == 0;}
 
+    @Override
     public Integer getSize() {return size;}
 
+    @Override
     public V get(K key) {
         if (root == null) {
             throw new RuntimeException("Tree is empty");
@@ -39,6 +43,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         }
     }
 
+    @Override
     public FuckLinkedList<Entry<K, V>> getList() {
         inorderTraversal();
         return entryList;
@@ -51,7 +56,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
      * @param key 用于查找或创建节点的键。
      * @return 找到或创建的节点的值。
      */
-    public V getOrDefault (K key) {
+    @Override
+    public V getOrDefault(K key) {
         // 如果树为空，创建一个新节点作为根节点，并返回该节点的值
         if (root == null) {
             root = new Node<>(key);
@@ -101,6 +107,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         return key1.compareTo(key2);
     }
 
+    @Override
     public void clear() {
         if (root != null) {
             root.release();
@@ -109,10 +116,12 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         size = 0;
     }
 
+    @Override
     public boolean contains(K key) {
         return getNode(root, key) != null;
     }
 
+    @Override
     public void insert(K key, V value) {
         if (root == null) {
             root = new Node<>(key, value);
@@ -123,6 +132,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         }
     }
 
+    @Override
     public boolean insertIfAbsent(K key, V value) {
         int sizeBeforeInsertion = size;
         if (root == null) {
@@ -135,6 +145,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         return size > sizeBeforeInsertion;
     }
 
+    @Override
     public V getOrInsert(K key, V value) {
         if (root == null) {
             root = new Node<>(key, value);
@@ -147,6 +158,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         }
     }
 
+    @Override
     public boolean remove(K key) {
 
         if (root == null) {
@@ -157,6 +169,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     }
 
 
+    @Override
     public V getAndRemove(K key) {
         V result = get(key);
 
