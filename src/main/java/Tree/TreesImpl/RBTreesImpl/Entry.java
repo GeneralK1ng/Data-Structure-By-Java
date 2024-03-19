@@ -1,4 +1,4 @@
-package Tree.RBTree;
+package Tree.TreesImpl.RBTreesImpl;
 
 public class Entry<K, V>{
     private final K key;

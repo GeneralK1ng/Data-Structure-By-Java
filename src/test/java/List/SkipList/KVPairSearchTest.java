@@ -10,7 +10,7 @@ public class KVPairSearchTest {
 
     public static void main(String[] args) {
         String filename = "data.txt";
-        String queryKey = "change Ur key";
+        String queryKey = "4299548";
 
         performQueryPressureTest(filename, queryKey);
     }

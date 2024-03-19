@@ -1,8 +1,9 @@
-package Tree.RBTree;
+package Tree.TreesImpl.RBTreesImpl;
 
 
 import List.Lists.FuckLinkedList;
 import List.ListsImpl.DoublyLinkedList.DoublyListImpl;
+
 
 import java.util.Stack;
 
@@ -15,14 +16,12 @@ import java.util.Stack;
 * */
 public class RedBlackTree<K extends Comparable<K>, V> {
     private Node<K,V> root;
-    private final FuckLinkedList<Entry<K, V>> entryList = new DoublyListImpl<>();
+    private FuckLinkedList<Entry<K, V>> entryList = new DoublyListImpl<>();
     private static Integer size = 0;
-
 
     public RedBlackTree() {
         root = null;
     }
-
     public boolean isEmpty() {return size == 0;}
 
     public Integer getSize() {return size;}
@@ -75,7 +74,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         assert !key.equals(node.key);
 
         Node<K, V> result;
-        if (compare(key, node.key)) {
+        if (compare(key, node.key) < 0) {
             if (node.left == null) {
                 result = node.left = provide;
                 node.left.parent = node;
@@ -98,8 +97,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         return result;
     }
 
-    private boolean compare(K key1, K key2) {
-        return key1.compareTo(key2) < 0;
+    private int compare(K key1, K key2) {
+        return key1.compareTo(key2);
     }
 
     public void clear() {
@@ -149,22 +148,23 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     }
 
     public boolean remove(K key) {
+
         if (root == null) {
             return false;
         }
 
-        return remove(root, key, null);
+        return remove(root, key);
     }
 
 
     public V getAndRemove(K key) {
-        V[] result = (V[]) new Object[1];
+        V result = get(key);
 
         if (root == null) {
             throw new RuntimeException("Invalid key");
         } else {
-            if (remove(root, key, result)) {
-                return result[0];
+            if (remove(root, key)) {
+                return result;
             } else {
                 throw new RuntimeException("Invalid key");
             }
@@ -172,20 +172,20 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     }
 
 
-    private boolean remove(Node<K,V> node, K key, V[] result) {
+    private boolean remove(Node<K,V> node, K key) {
         assert node != null;
         if (key != node.key) {
-            if (compare(key, node.key)) {
-                Node<K, V> left = node.left;
-                if (left != null && remove(left, key, result)) {
+            if (compare(key, node.key) < 0) {
+                //Node<K, V> _left = node.left;
+                if (node.left != null && remove(node.left, key)) {
                     maintainRelationship(node);
                     return true;
                 } else {
                     return false;
                 }
-            } else {
-                Node<K, V> right = node.right;
-                if (right != null && remove(right, key, result)) {
+            } else if (compare(key, node.key) > 0){
+                //Node<K, V> _right = node.right;
+                if (node.right != null && remove(node.right, key)) {
                     maintainRelationship(node);
                     return true;
                 } else {
@@ -194,11 +194,10 @@ public class RedBlackTree<K extends Comparable<K>, V> {
             }
         }
 
-        assert key == node.key;
-        result[0] = node.value;
+        assert key.equals(node.key);
 
         if (size == 1) {
-            clear();
+            this.clear();
             return true;
         }
 
@@ -366,7 +365,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
 
         assert !key.equals(node.key);
 
-        if (compare(key, node.key)) {
+        if (compare(key, node.key) < 0) {
             // key < node.key
             if (node.left == null) {
                 Node<K, V> newNode = new Node<>(key, value);
@@ -494,11 +493,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
 
         Node<K,V> successor = node.right; // 成功者节点，即原节点的右子节点，将成为新的当前节点
         node.right = successor.left; // 将原节点的右子树挂到成功者节点的左部
-        if (successor.left != null) {
-            successor.left.parent = node; // 更新成功者节点原左子节点的父节点指针
-        }
-        successor.left = node; // 将原节点设置为成功者节点的左子节点
-        node.parent = successor; // 更新原节点的父节点指针
+        successor.left = node;
+
 
         // 更新各节点的 parent 指针，以保持树的结构完整性
         maintainRelationship(node);
@@ -533,12 +529,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
 
         Node<K,V> predecessor = node.left;
         node.left = predecessor.right;
-        if (predecessor.right != null) {
-            predecessor.right.parent = node;
-        }
         predecessor.right = node;
 
-        node.parent = predecessor;
 
         //维护各节点指针
         maintainRelationship(node);
@@ -564,7 +556,7 @@ public class RedBlackTree<K extends Comparable<K>, V> {
      *
      * @param node 待维护关系的节点。
      */
-    private void maintainRelationship(Node<K,V> node) {
+    private static void maintainRelationship(Node node) {
         // 为左子节点设置父节点
         if (node.left != null) {
             node.left.parent = node;
@@ -603,6 +595,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
         if (root == null) {
             return;
         }
+
+        entryList = new DoublyListImpl<>();
 
         //TODO 需要实现一个栈数据结构
         Stack<Node<K,V>> stack = new Stack<>();

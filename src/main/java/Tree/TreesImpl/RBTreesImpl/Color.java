@@ -1,4 +1,4 @@
-package Tree.RBTree;
+package Tree.TreesImpl.RBTreesImpl;
 
 public enum Color {
      RED,

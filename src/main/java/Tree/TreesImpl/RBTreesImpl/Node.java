@@ -1,4 +1,4 @@
-package Tree.RBTree;
+package Tree.TreesImpl.RBTreesImpl;
 
 public class Node<K extends Comparable<K>, V> {
     Color color = Color.RED;
