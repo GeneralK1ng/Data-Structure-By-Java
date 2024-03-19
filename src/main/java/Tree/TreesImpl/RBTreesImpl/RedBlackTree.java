@@ -9,45 +9,84 @@ import Tree.Trees.RBTree;
 import java.util.Stack;
 
 
-/*红黑树的性质
-* 1. 节点为红色或者黑色
-* 2. NIL 节点（null子节点）为黑色
-* 3. 红子节点的子节点为黑色
-* 4. 从根节点到任意 NIL 节点的每条路径上的黑色节点数量相同
-* */
+/**
+ * 红黑树的实现类
+ * 性质：
+ * 1. 节点为红色或者黑色
+ * 2. NIL 节点（null子节点）为黑色
+ * 3. 红子节点的子节点为黑色
+ * 4. 从根节点到任意 NIL 节点的每条路径上的黑色节点数量相同
+ * @param <K> - 键的类型
+ * @param <V> - 值的类型
+ */
 public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
+    /**
+     * 键值对存储的根节点。这是一个指向存储结构顶端的引用，用于快速访问和管理存储的数据。
+     */
     private Node<K,V> root;
+
+    /**
+     * 链表用于存储所有的键值对入口。这种数据结构允许快速的插入和删除操作，
+     * 对于需要频繁修改集合的操作来说非常高效。
+     */
     private FuckLinkedList<Entry<K, V>> entryList = new DoublyListImpl<>();
+
+    /**
+     * 集合的大小计数器。这是一个静态变量，用于跟踪集合中元素的数量，
+     * 便于快速访问而不必遍历整个集合。初始值为0。
+     */
     private static Integer size = 0;
 
+    /**
+     * 初始化红黑树
+     */
     public RedBlackTree() {
         root = null;
     }
+    /**
+     * 检查树是否为空。
+     *
+     * @return boolean - 如果树中没有元素，则返回true；否则返回false
+     */
     @Override
     public boolean isEmpty() {return size == 0;}
 
+    /**
+     * 获取红黑树节点数量
+     * @return 整型，表示树中节点的数量
+     */
     @Override
     public Integer getSize() {return size;}
 
+    /**
+     * 获取给定键对应的值。
+     * @param key 要查找的键，类型为K。
+     * @return 如果找到对应键的节点，则返回该节点的值，类型为V。如果树为空或键不存在，则抛出运行时异常。
+     */
     @Override
     public V get(K key) {
-        if (root == null) {
+        if (root == null) { // 检查树是否为空
             throw new RuntimeException("Tree is empty");
         } else {
-            Node<K, V> node = getNode(root, key);
+            Node<K, V> node = getNode(root, key); // 在树中查找指定键的节点
             if (node != null) {
-                return node.value;
+                return node.value; // 找到则返回节点的值
             } else {
-                throw new RuntimeException("Key not found");
+                throw new RuntimeException("Key not found"); // 未找到键则抛出异常
             }
         }
     }
 
+    /**
+     * 获取链表的有序遍历结果。
+     * 该方法首先会执行中序遍历，然后返回遍历结果形成的链表。
+     *
+     * @return FuckLinkedList<Entry<K, V>> 返回中序遍历后形成的链表，其中Entry<K, V>表示键值对。
+     */
     @Override
     public FuckLinkedList<Entry<K, V>> getList() {
-        inorderTraversal();
-        return entryList;
-
+        inorderTraversal(); // 执行中序遍历
+        return entryList; // 返回遍历结果形成的链表
     }
 
     /**
@@ -70,121 +109,209 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
         }
     }
 
+    /**
+     * 获取给定键对应的节点，如果该节点不存在，则提供一个新节点并插入。
+     *
+     * @param node 当前比较的节点
+     * @param key 需要查找或插入的键
+     * @param provide 当查找的键不存在时，提供用来插入的新节点
+     * @return 找到的或插入的节点
+     */
     private Node<K, V> getNodeOrProvide(Node<K,V> node, K key, Node<K, V> provide) {
-        assert node != null;
+        assert node != null;  // 确保传入的当前节点不为null
 
+        // 如果键相等，则返回当前节点
         if (key.equals(node.key)) {
             return node;
         }
 
-        assert !key.equals(node.key);
+        assert !key.equals(node.key);  // 确保传入的键不等于当前节点的键
 
         Node<K, V> result;
+        // 比较键的大小，决定向左子树还是右子树搜索
         if (compare(key, node.key) < 0) {
+            // 向左子树搜索
             if (node.left == null) {
+                // 如果左子节点为空，将提供的节点插入左子树
                 result = node.left = provide;
                 node.left.parent = node;
-                maintainAfterInsert(node.left);
-                size++;
+                maintainAfterInsert(node.left);  // 保持树的性质
+                size++;  // 更新树的大小
             } else {
+                // 如果左子节点不为空，递归向左子树搜索
                 result = getNodeOrProvide(node.left, key, provide);
             }
         } else {
-            // key > node.key
+            // 向右子树搜索
             if (node.right == null) {
+                // 如果右子节点为空，将提供的节点插入右子树
                 result = node.right = provide;
                 node.right.parent = node;
-                maintainAfterInsert(node.right);
-                size++;
+                maintainAfterInsert(node.right);  // 保持树的性质
+                size++;  // 更新树的大小
             } else {
+                // 如果右子节点不为空，递归向右子树搜索
                 result = getNodeOrProvide(node.right, key, provide);
             }
         }
-        return result;
+        return result;  // 返回找到的或插入的节点
     }
 
+
+    /**
+     * 比较两个键的大小。
+     *
+     * @param key1 第一个键，类型为K，不能为空。
+     * @param key2 第二个键，类型为K，不能为空。
+     * @return 返回比较的结果，如果key1小于key2，返回负数；如果相等，返回0；如果大于，返回正数。
+     *         该结果用于确定键的顺序或匹配性。
+     */
     private int compare(K key1, K key2) {
         return key1.compareTo(key2);
     }
 
+
+    /**
+     * 清空树结构，释放根节点资源，并将大小设置为0。
+     * 该方法不接受参数，也不返回任何值。
+     */
     @Override
     public void clear() {
+        // 如果根节点不为空，则释放根节点资源，并将根节点置为null
         if (root != null) {
             root.release();
             root = null;
         }
+        // 将大小设置为0
         size = 0;
     }
 
+
+    /**
+     * 检查树中是否包含指定的键。
+     *
+     * @param key 要查找的键。
+     * @return 如果树中存在指定的键，则返回true；否则返回false。
+     */
     @Override
     public boolean contains(K key) {
+        // 通过递归搜索树，查找是否存在与给定键相匹配的节点。
         return getNode(root, key) != null;
     }
 
+
+    /**
+     * 将给定的键值对插入到红黑树中。
+     * @param key 要插入的键
+     * @param value 与键对应的值
+     */
     @Override
     public void insert(K key, V value) {
+        // 如果树为空，创建一个新的节点作为根节点，并将其颜色设置为黑色
         if (root == null) {
             root = new Node<>(key, value);
             root.setColor(Color.BLACK);
             size++;
         } else {
+            // 否则，递归地将键值对插入到树的适当位置
             insert(root, key, value, true);
         }
     }
 
+    /**
+     * 如果给定的键不存在于树中，则插入该键值对。
+     *
+     * @param key  要插入的键
+     * @param value 与键对应的值
+     * @return 如果插入了新的键值对，则返回true；如果键已存在，不进行插入，返回false。
+     */
     @Override
     public boolean insertIfAbsent(K key, V value) {
+        // 记录插入前树的大小
         int sizeBeforeInsertion = size;
+        // 如果树为空，插入新的节点作为根节点
         if (root == null) {
             root = new Node<>(key, value);
-            root.setColor(Color.BLACK);
-            size++;
+            root.setColor(Color.BLACK); // 设置新节点颜色为黑色
+            size++; // 更新树的大小
         } else {
+            // 否则，在树中正常插入新的键值对
             insert(root, key, value, false);
         }
+        // 判断是否成功插入新的键值对
         return size > sizeBeforeInsertion;
     }
 
+    /**
+     * 获取给定键对应的值，如果不存在，则插入此键值对并返回该值。
+     * @param key 要查找或插入的键。
+     * @param value 与键对应的值，如果键不存在则插入此值。
+     * @return 返回键对应的值，如果插入新键值对，则返回新值。
+     */
     @Override
     public V getOrInsert(K key, V value) {
+        // 如果树为空，即没有元素，则创建并返回一个新的节点
         if (root == null) {
             root = new Node<>(key, value);
-            root.setColor(Color.BLACK);
-            size++;
+            root.setColor(Color.BLACK); // 设置新节点颜色为黑色
+            size++; // 树的大小加一
             return root.value;
         } else {
+            // 获取已有节点或提供一个新节点（如果键不存在）
             Node<K, V> node = getNodeOrProvide(root, key, new Node<>(key, value));
-            return node.value;
+            return node.value; // 返回找到或插入的节点的值
         }
     }
 
+    /**
+     * 从红黑树中移除指定的键和其对应的值。
+     *
+     * @param key 要移除的键。
+     * @return 如果成功移除了键，则返回 true；如果树中没有此键，则返回 false。
+     */
     @Override
     public boolean remove(K key) {
 
+        // 当树为空时，直接返回 false，表示无法移除任何键
         if (root == null) {
             return false;
         }
 
+        // 调用递归函数 remove，尝试从根节点开始移除指定的键
         return remove(root, key);
     }
 
 
+    /**
+     * 从集合中获取给定键对应的值并移除该键值对。
+     *
+     * @param key 用于查找和移除的键。
+     * @return 如果找到且成功移除，则返回对应的值；如果未找到，则抛出运行时异常。
+     * @throws RuntimeException 如果给定的键无效（即不存在于集合中）。
+     */
     @Override
     public V getAndRemove(K key) {
-        V result = get(key);
+        V result = get(key); // 尝试获取给定键对应的值
 
         if (root == null) {
-            throw new RuntimeException("Invalid key");
+            throw new RuntimeException("Invalid key"); // 如果树为空，表示未找到键，抛出异常
         } else {
+            // 尝试移除键值对
             if (remove(root, key)) {
-                return result;
+                return result; // 移除成功，返回对应的值
             } else {
-                throw new RuntimeException("Invalid key");
+                throw new RuntimeException("Invalid key"); // 移除失败（即键不存在），抛出异常
             }
         }
     }
 
-
+    /**
+     * 从红黑树中移除指定键的节点
+     *
+     * @param node 根节点
+     * @param key 要移除的键
+     * @return 如果成功移除节点，返回true；否则返回false
+     */
     private boolean remove(Node<K,V> node, K key) {
         assert node != null;
         if (key != node.key) {
@@ -268,26 +395,42 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
         return true;
     }
 
+    /**
+     * 交换两个节点的键值对。
+     * @param lhs 第一个节点，左操作数
+     * @param rhs 第二个节点，右操作数
+     */
     private void swapNode(Node<K, V> lhs, Node<K, V> rhs) {
+        // 临时保存lhs节点的键和值
         K tempKey = lhs.key;
         V tempValue = lhs.value;
 
+        // 将rhs节点的键和值赋给lhs节点
         lhs.key = rhs.key;
         lhs.value = rhs.value;
 
+        // 将之前保存的lhs节点的键和值赋给rhs节点
         rhs.key = tempKey;
         rhs.value = tempValue;
     }
 
+    /**
+     * 在删除操作后维护红黑树的性质。
+     *
+     * @param node 被删除节点的子节点，用于维持红黑树的性质
+     */
     private void maintainAfterRemove(Node<K, V> node) {
+        // 根节点无需维护
         if (node.isRoot()) {
             return;
         }
-
+        // 断言：当前节点是黑色且有兄弟节点
         assert node.isBlack() && node.hasSibling();
 
+        // 当前节点相对于父节点的方向
         Direction direction = node.direction();
 
+        // 获取兄弟节点
         Node<K, V> sibling = node.sibling();
 
         if (sibling.isRed()) {
@@ -315,11 +458,9 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
             if (node.parent.isRed()) {
                 sibling.color = Color.RED;
                 node.parent.color = Color.BLACK;
-                return;
             } else {
                 sibling.color = Color.RED;
                 maintainAfterRemove(node.parent);
-                return;
             }
         } else {
             if (closeNephew != null && closeNephew.isRed()) {
@@ -333,7 +474,9 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
             }
 
             assert closeNephew == null || closeNephew.isBlack();
-            assert distantNephew.isRed();
+            if (distantNephew != null) {
+                assert distantNephew.isRed();
+            }
 
             rotateSameDirection(node.parent, direction);
 
@@ -346,9 +489,19 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
         }
     }
 
+    /**
+     * 根据指定方向对节点进行旋转。
+     * 该函数用于当需要对某个节点进行左旋转或右旋转时的调用，旋转操作的具体方向由参数 direction 指定。
+     *
+     * @param node 需要进行旋转的节点，类型为 Node<K, V>，是红黑树中的一个节点。
+     * @param direction 旋转的方向，由 Direction 枚举类型指定。不能为 Direction.ROOT，因为根节点不需要旋转。
+     *                  Direction.LEFT 表示左旋转，Direction.RIGHT 表示右旋转。
+     * 注意：该方法不返回任何值，其作用是修改节点的指向，以保持红黑树的性质。
+     */
     private void rotateSameDirection(Node<K, V> node, Direction direction) {
-        assert direction != Direction.ROOT;
+        assert direction != Direction.ROOT; // 确保方向不为根节点方向
 
+        // 根据方向执行相应的旋转操作
         if (direction == Direction.LEFT) {
             rotateLeft(node);
         } else {
@@ -356,9 +509,17 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
         }
     }
 
+    /**
+     * 根据给定的方向，对指定节点进行反向旋转。
+     * 该操作主要用于平衡红黑树，在插入或删除操作后，可能需要对树进行调整，以保持其平衡。
+     *
+     * @param node 需要进行旋转操作的节点。
+     * @param direction 方向，指定是向左还是向右旋转。注意，方向不能为ROOT，因为根节点不需要旋转。
+     */
     private void rotateOppositeDirection(Node<K, V> node, Direction direction) {
-        assert direction != Direction.ROOT;
+        assert direction != Direction.ROOT; // 确保方向不是ROOT，因为根节点不需要旋转。
 
+        // 根据输入的方向执行反向的旋转操作。
         if (direction == Direction.LEFT) {
             rotateRight(node);
         } else {
@@ -367,8 +528,17 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
     }
 
 
+    /**
+     * 将键值对插入到二叉搜索树中。
+     * 如果树中已存在与给定键相等的节点，并且replace为true，则用新的值替换原有的值。
+     * @param node 当前正在检查的节点
+     * @param key 需要插入的键
+     * @param value 需要插入的值
+     * @param replace 如果为true，且遇到相等的键，则替换原有值
+     */
     private void insert(Node<K,V> node, K key, V value, boolean replace) {
         assert node != null;
+        // 如果key与当前节点的key相等，根据replace标志决定是否替换值
         if (key.equals(node.key)) {
             if (replace) {
                 node.value = value;
@@ -378,31 +548,33 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
 
         assert !key.equals(node.key);
 
+        // 根据key与当前节点key的比较结果，决定向左子树还是右子树插入
         if (compare(key, node.key) < 0) {
-            // key < node.key
+            // key小于node.key，向左子树插入
             if (node.left == null) {
                 Node<K, V> newNode = new Node<>(key, value);
                 newNode.parent = node;
                 node.left = newNode;
-                maintainAfterInsert(newNode);
-                size++;
+                maintainAfterInsert(newNode); // 保持树的性质
+                size++; // 更新树的大小
             } else {
                 insert(node.left, key, value, replace);
             }
         } else {
-            // key > node.key
+            // key大于node.key，向右子树插入
             if (node.right == null) {
                 Node<K, V> newNode = new Node<>(key, value);
                 newNode.parent = node;
                 node.right = newNode;
-                maintainAfterInsert(newNode);
-                size++;
+                maintainAfterInsert(newNode); // 保持树的性质
+                size++; // 更新树的大小
             } else {
                 insert(node.right, key, value, replace);
             }
         }
 
     }
+
 
     //插入操作
     /*
@@ -428,6 +600,11 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
      *                   个数比 P - G - U 这条路径上少 1，暂时打破性质 4）。
      *                2. 重新染色，将 P 染黑，将 G 染红，同时满足了性质 3 和 4。
      * */
+
+    /**
+     * 在插入节点后，维护红黑树的性质
+     * @param node 需要维护的节点
+     */
     private void maintainAfterInsert(Node<K, V> node) {
         assert node != null;
 
@@ -604,6 +781,12 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
         }
     }
 
+    /**
+     * 中序遍历二叉树并把节点值存储到双向链表中。
+     * 该方法不接受参数，也不返回任何值。
+     * 遍历顺序为：先遍历左子树，然后访问当前节点，最后遍历右子树。
+     * 在遍历过程中，使用栈来辅助实现。
+     */
     private void inorderTraversal() {
         if (root == null) {
             return;
@@ -611,22 +794,28 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
 
         entryList = new DoublyListImpl<>();
 
-        //TODO 需要实现一个栈数据结构
+        // 使用栈来辅助进行中序遍历
         Stack<Node<K,V>> stack = new Stack<>();
 
         Node<K,V> current = root;
 
+        // 当前节点不为空或者栈不为空时继续遍历
         while (current != null || !stack.empty()) {
+            // 遍历当前节点的左子树，将所有左节点压入栈中
             while (current != null) {
                 stack.push(current);
                 current = current.left;
             }
+            // 当前节点为空时，栈顶元素即为刚刚遍历完的左子树的最右节点
             if (!stack.empty()) {
                 current = stack.peek();
                 stack.pop();
+                // 将节点值添加到链表中
                 entryList.append(current.entry());
+                // 遍历右子树
                 current = current.right;
             }
         }
     }
+
 }
