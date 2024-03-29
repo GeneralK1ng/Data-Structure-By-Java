@@ -6,7 +6,7 @@ import Queue.Queues.NormalQueue;
 public class DoublyListImpl<T> implements FuckLinkedList<T> {
     private DoublyNode<T> head;
     private DoublyNode<T> tail;
-    private static Integer size = 0;
+    private Integer size = 0;
 
     public DoublyListImpl() {
         head = null;
