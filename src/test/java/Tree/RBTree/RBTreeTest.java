@@ -1,6 +1,6 @@
 package Tree.RBTree;
 
-import Tree.Trees.RBTree;
+import Tree.Trees.Tree;
 import Tree.TreesImpl.RBTreesImpl.RedBlackTree;
 
 import java.io.BufferedReader;
@@ -20,7 +20,7 @@ public class RBTreeTest {
     private static void performQueryPressureTest(String filename, String queryKey) {
 
         long readStartTime = System.currentTimeMillis();
-        RBTree<Integer, String> redBlackTree = readDataFromFile(filename);
+        Tree<Integer, String> redBlackTree = readDataFromFile(filename);
         long readEndTime = System.currentTimeMillis();
         System.out.println("Read data from file " + filename + " in " + (readEndTime - readStartTime) / 1000 + " seconds");
         System.out.println("Tree size: " + redBlackTree.getSize());
@@ -37,8 +37,8 @@ public class RBTreeTest {
         System.out.println("Get level execution time: " + (getLevelEndTime - getLevelStartTime) + " ms" + "level: " + level);
     }
 
-    private static RBTree<Integer, String> readDataFromFile(String filename) {
-        RBTree<Integer, String> redBlackTree = new RedBlackTree<>();
+    private static Tree<Integer, String> readDataFromFile(String filename) {
+        Tree<Integer, String> redBlackTree = new RedBlackTree<>();
         int count = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;

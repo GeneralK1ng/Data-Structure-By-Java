@@ -102,7 +102,7 @@ public class PriorityQueueImpl<T extends Comparable<T>> implements PriorityQueue
                 break;
             }
 
-            index = child;
+            index = child;  
         }
 
         heap[index] = temp;

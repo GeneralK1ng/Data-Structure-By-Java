@@ -178,4 +178,9 @@ public class SinglyListImpl<T> implements FuckLinkedList<T> {
         return size;
     }
 
+    @Override
+    public T get(int index) {
+        return null;
+    }
+
 }

@@ -16,6 +16,11 @@ public class CircularListImpl<T> implements FuckLinkedList<T> {
         return size;
     }
 
+    @Override
+    public T get(int index) {
+        return null;
+    }
+
     // 静态方法，用于直接创建链表
     @SafeVarargs
     public static <T> CircularListImpl<T> listOf(T... elements) {

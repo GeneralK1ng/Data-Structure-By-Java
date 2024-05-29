@@ -4,7 +4,7 @@ package Tree.TreesImpl.RBTreesImpl;
 import List.Lists.FuckLinkedList;
 import List.ListsImpl.DoublyLinkedList.DoublyListImpl;
 import Stack.StacksImpl.ListNodeStackImpl;
-import Tree.Trees.RBTree;
+import Tree.Trees.Tree;
 
 
 /**
@@ -17,7 +17,7 @@ import Tree.Trees.RBTree;
  * @param <K> - 键的类型
  * @param <V> - 值的类型
  */
-public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
+public class RedBlackTree<K extends Comparable<K>, V> implements Tree<K, V> {
     /**
      * 键值对存储的根节点。这是一个指向存储结构顶端的引用，用于快速访问和管理存储的数据。
      */
@@ -30,10 +30,10 @@ public class RedBlackTree<K extends Comparable<K>, V> implements RBTree<K, V> {
     private FuckLinkedList<Entry<K, V>> entryList = new DoublyListImpl<>();
 
     /**
-     * 集合的大小计数器。这是一个静态变量，用于跟踪集合中元素的数量，
+     * 集合的大小计数器，用于跟踪集合中元素的数量，
      * 便于快速访问而不必遍历整个集合。初始值为0。
      */
-    private static Integer size = 0;
+    private Integer size = 0;
 
     /**
      * 初始化红黑树

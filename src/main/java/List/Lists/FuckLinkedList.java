@@ -51,4 +51,8 @@ public interface FuckLinkedList<T> {
      * 打印链表
      */
     public void print();
+
+    public Integer getSize();
+
+    public T get(int index);
 }

@@ -3,7 +3,7 @@ package Tree.Trees;
 import List.Lists.FuckLinkedList;
 import Tree.TreesImpl.RBTreesImpl.Entry;
 
-public interface RBTree<K extends Comparable<K>, V> {
+public interface Tree<K extends Comparable<K>, V> {
     boolean isEmpty();
 
     Integer getSize();

@@ -125,6 +125,7 @@ public class DoublyListImpl<T> implements FuckLinkedList<T> {
         }
         if (index == 0) {
             prepend(data);
+            return;
         } else if (index == size - 1) {
             tail.setNext(new DoublyNode<>(data));
             tail.getNext().setPrev(tail);
@@ -183,6 +184,23 @@ public class DoublyListImpl<T> implements FuckLinkedList<T> {
 
     public Integer getSize() {
         return size;
+    }
+
+    public T get(int index){
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (index == 0) {
+            return head.getData();
+        } else if (index == size - 1) {
+            return tail.getData();
+        } else {
+            DoublyNode<T> temp = head;
+            for (int i = 0; i < index; i++) {
+                temp = temp.getNext();
+            }
+            return temp.getData();
+        }
     }
 
 }
